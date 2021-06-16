@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar Categoría
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+		<h1>Editar Categoría</h1>
+
+		{{ include('categoria/_form.html.twig', {'button_label': 'Guardar'}) }}
+
+		<div class="d-flex">
+			<a href="{{ path('categoria_show', {'nombre': categorium.nombre}) }}" class="btn btn-warning me-3">
+				<i class="fa fa-undo-alt"></i>
+				Volver a la categoria</a>
+
+			{{ include('categoria/_delete_form.html.twig') }}
+		</div>
+	</div>
+{% endblock %}

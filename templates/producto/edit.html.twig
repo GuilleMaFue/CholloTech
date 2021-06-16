@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Editar producto
+{% endblock %}
+
+{% block body %}
+	<div class="container">
+		<h1>Editar Producto</h1>
+
+		{{ include('producto/_form.html.twig', {'button_label': 'Guardar'}) }}
+
+		<div class="d-flex">
+			<a href="{{ path('producto_show', {'id': producto.id}) }}" class="btn btn-warning me-3">
+				<i class="fa fa-undo-alt"></i>
+				Volver al producto</a>
+
+			{{ include('producto/_delete_form.html.twig') }}
+		</div>
+	</div>
+{% endblock %}

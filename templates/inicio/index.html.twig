@@ -1,0 +1,177 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CholloTech - Inicio
+{% endblock %}
+{% block javascripts %}
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+{% endblock %}
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+		a:link,
+		a:visited,
+		a:active {
+			text-decoration: none;
+			color: black;
+		}
+	</style>
+	<div class="categorias w-100 d-flex justify-content-center">
+		<div id="carouselExampleControls" class="carousel slide" data-bs-ride="carousel">
+			<div class="carousel-inner pt-3">
+				{% for categoria in categorias %}
+					{% if loop.first %}
+						<div class="carousel-item active text-center">
+							<div
+								class="row">
+							{# open row #}
+							{% endif %}
+
+							<div class="col-md-3 mb-3">
+								<a class="btn btn-warning" href="{{path('categoria_show', {'nombre': categoria.nombre})}}">{{ categoria.nombre }}</a>
+							</div>
+
+							{% if loop.index % 4 == 0 %}
+							</div>
+						</div>
+						<div class="carousel-item text-center">
+							<div
+								class="row">
+							{# after 3 iterates close row and open new #}
+							{% endif %}
+							{% if loop.last %}
+							</div>
+						</div>
+						{# close last row #}
+					{% endif %}
+				{% endfor %}
+			</div>
+
+			<button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="prev" style="width: 30px">
+				<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Anterior</span>
+			</button>
+			<button class="carousel-control-next" type="button" data-bs-target="#carouselExampleControls" data-bs-slide="next" style="width: 30px">
+				<span class="carousel-control-next-icon" aria-hidden="true"></span>
+				<span class="visually-hidden">Posterior</span>
+			</button>
+		</div>
+	</div>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-xl-7 col-md-12">
+				<div class="row equal d-flex">
+					{% for producto in productos|reverse %}
+						<div class="scrollable-data">
+							<div class="col d-flex">
+								<div class="card mb-3 mx-5 mt-2" style="width: 60em;">
+									<div class="row g-0 h-100">
+										<div class="col-md-5">
+											<img src="{{ asset(uploads_directory ~ producto.imagen ) }}" alt="{{ producto.nombre }}" style="width:100%; height:100%" class="imagenes">
+										</div>
+										<div class="col-md-7">
+											<div class="card-body h-100">
+												<h5 class="card-title">{{ producto.nombre }}</h5>
+												{% set sumratings = 0 %}
+												{% for rating in producto.valoracions %}
+													{% set sumratings = sumratings + rating.puntuacion %}
+												{% endfor %}
+												{% if producto.valoracions|length != 0 %}
+													{% set average = sumratings / producto.valoracions|length %}
+													{{ average|rating }}
+												{% else %}
+													{{ 0|rating }}
+												{% endif %}
+												<p class="card-text text-warning fw-bold fs-4">{{ producto.precio }}
+													€</p>
+												{% if producto.descripcion|length < 50 %}
+													<p class="card-text">{{ producto.descripcion }}</p>
+												{% else %}
+													<p class="card-text">{{ producto.descripcion|u.truncate(50, '...', false) }}</p>
+													<a href="{{ path('producto_show', {'id': producto.id}) }}" class="fw-bold">Leer mas</a>
+												{% endif %}
+												<p class="card-text">
+													<small class="text-muted">{{ producto.fechacreacion|ago}}</small>
+												</p>
+												<div class="d-md-flex justify-content-md-end">
+													<a target="_self" href="{{ path('producto_show', {'id': producto.id}) }}/#comentarios" class="btn btn-warning">
+														<i class="fas fa-comments"></i>
+														{{ producto.comentarios|length }}</a>
+													<a href="{{ path('producto_show', {'id': producto.id}) }}" class="btn btn-warning mx-2">Ir al Chollo</a>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+			<div class="col-md-4 d-xl-block d-none">
+				<div class="row">
+					<div class="card mt-2">
+						<div class="card-body">
+							<h4>Lo mas valorado</h4>
+							{% for mejorValorado in mejorValorados %}
+								<a href="{{ path('producto_show', {'id': mejorValorado.id}) }}">
+									<div class="row g-0 mb-4">
+										<div class="col-md-4">
+											<img src="{{ asset(uploads_directory ~ mejorValorado.imagen ) }}" alt="{{ mejorValorado.nombre }}" style="width:100%; height:100%" class="imageneslateral">
+										</div>
+										<div class="col-md-8">
+											<div class="card-body">
+												<h5 class="card-title">{{ mejorValorado.nombre }}</h5>
+												{% set sumratings = 0 %}
+												{% for rating in mejorValorado.valoracions %}
+													{% set sumratings = sumratings + rating.puntuacion %}
+												{% endfor %}
+												{% if mejorValorado.valoracions|length != 0 %}
+													{% set average = sumratings / mejorValorado.valoracions|length %}
+													{{ average|rating }}
+												{% else %}
+													{{ 0|rating }}
+												{% endif %}
+												<p class="card-text">
+													<small class="text-muted">{{ mejorValorado.fechacreacion|ago}}</small>
+												</p>
+											</div>
+										</div>
+									</div>
+								</a>
+								<hr>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+				<div class="row d-xl-block d-none">
+					<div class="card mt-2">
+						<div class="card-body">
+							<h4>Categorias mas utilizadas</h4>
+							{% for mejorCategoria in mejoresCategorias %}
+								<a href="{{path('categoria_show', {'nombre': mejorCategoria.nombre})}}">
+									<div class="row g-0 mb-4">
+										<div class="col-md-8">
+											<div class="card-body">
+												<h5 class="card-title">{{ mejorCategoria.nombre }}</h5>
+											</div>
+										</div>
+									</div>
+								</a>
+								<hr>
+							{% endfor %}
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

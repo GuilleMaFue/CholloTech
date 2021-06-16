@@ -1,0 +1,89 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chollotech -
+	{{usuario.nickname}}
+{% endblock %}
+{% block javascripts %}
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+{% endblock %}
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+		a:link,
+		a:visited,
+		a:active {
+			text-decoration: none;
+			color: black;
+			font-weight: bold;
+		}
+	</style>
+	<div class="container-fluid">
+		<div class="row mt-2">
+			<div class="col-4">
+				<div class="card">
+					<div class="card-body">
+						<p class="text-center fs-1 fw-bold">{{ usuario.nickname }}</p>
+						<h4>Estadísticas</h4>
+						<hr>
+						<p><b>Comentarios:</b>
+							{{ comentarios|length }}</p>
+						<p><b>Chollos:</b>
+							{{ chollos|length }}</p>
+					</div>
+				</div>
+			</div>
+			<div class="col-8">
+				<div class="card">
+					<div class="card-header">Actividad</div>
+					<div class="card-body">
+						<ul class="nav nav-tabs" id="myTab" role="tablist">
+							<li class="nav-item" role="presentation">
+								<button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#chollos" type="button" role="tab" aria-controls="chollos" aria-selected="true">Chollos</button>
+							</li>
+							<li class="nav-item" role="presentation">
+								<button class="nav-link" id="profile-tab" data-bs-toggle="tab" data-bs-target="#comentarios" type="button" role="tab" aria-controls="comentarios" aria-selected="false">Comentarios</button>
+							</li>
+						</ul>
+						<div class="tab-content" id="myTabContent">
+							<div class="tab-pane fade show active mt-3" id="chollos" role="tabpanel" aria-labelledby="chollos-tab">
+								{% for chollo in chollos %}
+									<div class="scrollable-data">
+										<p>
+											<b>{{ usuario.nickname }}</b>
+											creó el chollo
+											<a href="{{ path('producto_show', {'id': chollo.id}) }}">{{ chollo.nombre }}</a>
+										</p>
+										<small class="text-muted">{{ chollo.fechacreacion|ago}}</small>
+										<hr>
+									</div>
+								{% endfor %}
+							</div>
+							<div class="tab-pane fade mt-3" id="comentarios" role="tabpanel" aria-labelledby="comentarios-tab">
+								{% for cholloscomentario in cholloscomentarios|reverse %}
+									<div class="scrollable-data">
+										<p>
+											<b>{{ usuario.nickname }}</b>
+											comentó en el chollo
+											<a href="{{ path('producto_show', {'id': cholloscomentario.id}) }}">{{ cholloscomentario.nombre }}</a>
+										</p>
+										<hr>
+									</div>
+								{% endfor %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

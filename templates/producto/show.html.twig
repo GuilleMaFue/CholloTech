@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chollotech -
+	{{producto.nombre}}
+{% endblock %}
+{% block javascripts %}
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function () {
+			ratingstar = "{{ path('valoracion_new', {'id': producto.id}) }}";
+			productoUrl = "{{ path('producto_show', {'id': producto.id}) }}";
+			$('.star').click(function () {
+				var rating = parseInt($(this).attr('data-value'));
+				$.ajax({
+					url: ratingstar,
+					type: 'POST',
+					dataType: "JSON",
+					data: {
+						"puntuacion": rating
+					},
+					success: function (data) {
+						if (data.success) {
+							window.location.href = productoUrl;
+						}
+					}
+				});
+			});
+		});
+	</script>
+	<script src="{{ asset('bundles/starrating/js/rating.js') }}"></script>
+{% endblock %}
+{% block body %}
+	<style>
+		.example-wrapper {
+			margin: 1em auto;
+			max-width: 800px;
+			width: 95%;
+			font: 18px / 1.5 sans-serif;
+		}
+		.example-wrapper code {
+			background: #F5F5F5;
+			padding: 2px 6px;
+		}
+		a:link,
+		a:visited,
+		a:active {
+			text-decoration: none;
+			color: black;
+		}
+	</style>
+	<div class="mx-5 mt-3">
+		{% if is_granted('ROLE_ADMIN') %}
+			<div class="mb-3 d-flex">
+				<a href="{{ path('producto_edit', {'id': producto.id}) }}" class="btn btn-primary me-2">
+					<i class="fa fa-edit"></i>
+					Editar</a>
+				{{ include('producto/_delete_form.html.twig') }}
+			</div>
+		{% endif %}
+		<div class="card mb-3">
+			<div class="row g-0">
+				<div class="col-md-2">
+					<img src="{{ asset(uploads_directory ~ producto.imagen ) }}" alt="{{ producto.nombre }}" style="width:100%; height:100%">
+				</div>
+				<div class="col-md-10">
+					<div class="card-body">
+						<h5 class="card-title">{{ producto.nombre }}</h5>
+						{% if valoracion == true or not app.user %}
+							{% set sumratings = 0 %}
+							{% for rating in producto.valoracions %}
+								{% set sumratings = sumratings + rating.puntuacion %}
+							{% endfor %}
+							{% if producto.valoracions|length != 0 %}
+								{% set average = sumratings / producto.valoracions|length %}
+								{{ average|rating }}
+							{% else %}
+								{{ 0|rating }}
+							{% endif %}
+						{% else %}
+							{{ form(puntuacionform) }}{% endif %}
+							<p class="card-text text-warning fw-bold fs-4">{{ producto.precio }}
+								€</p>
+							<p class="card-text">
+								<small class="text-muted">{{ producto.fechacreacion|ago}}</small>
+							</p>
+							<div class="d-md-flex justify-content-md-start">
+								<a href="{{ producto.link }}" class="btn btn-warning">Comprar</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="card text-dark mb-3">
+				<div class="card-header">Descripción</div>
+				<div class="card-body">
+					<p class="card-text">{{ producto.descripcion|nl2br }}</p>
+				</div>
+			</div>
+
+			<div class="card text-dark mb-3">
+				<div class="card-header" id="comentarios">Comentarios</div>
+				<div class="card-body">
+					{% if app.user %}
+						<h2>Añadir un comentario</h2>
+						{{ form(comentarioform) }}
+							{% else %}
+								<h3>Registrate para hacer un comentario</h3>
+						{% endif %}
+						{% if comentarios|length > 0 %}
+							{% for comentario in comentarios %}
+								<div class="scrollable-data">
+									<div class="card mt-2 border-2 border-warning" style="width: 100%;">
+										<div class="card-body">
+											<a href="{{ path('usuario_show', {'id': comentario.usuario.id}) }}">
+												<h5 class="card-title">{{ comentario.usuario.nickname }}</h5>
+											</a>
+											<p class="card-text">{{ comentario.comentario }}</p>
+											<p class="card-text">
+												<small class="text-muted">{{ comentario.fechacreacion|ago}}</small>
+											</p>
+										</div>
+									</div>
+								</div>
+							{% endfor %}
+						{% else %}
+							<p>No hay comentarios</p>
+						{% endif %}
+					</div>
+				</div>
+
+			</div>
+		{% endblock %}
